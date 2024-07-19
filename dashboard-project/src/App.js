@@ -1,4 +1,4 @@
-// npm run deploy
+
 // import logo from './logo.svg';
 import './App.css';
 // eslint-disable-next-line
@@ -28,20 +28,34 @@ import { Card, Dropdown, DropdownButton } from 'react-bootstrap';
 import React, { useState } from 'react';
 function App() {
   const [selectedServer, setSelectedServer] = useState('server1');
+  const [userRole, setUserRole] = useState('CEO'); // Default role
 
-  const handleSelect = (event) => {
+  const handleServerSelect = (event) => {
     setSelectedServer(event);
   };
 
+  const handleRoleSelect = (event) => {
+    setUserRole(event);
+  };
   const DetailedCostAnalysisWidgetData = {
     labels: [
       '2024-07-01T00:00', '2024-07-02T00:00', '2024-07-03T00:00', '2024-07-04T00:00',
-      '2024-07-05T00:00', '2024-07-06T00:00', '2024-07-07T00:00', '2024-07-08T00:00'
+      '2024-07-05T00:00', '2024-07-06T00:00', '2024-07-07T00:00', '2024-07-08T00:00',
+      '2024-07-09T00:00', '2024-07-10T00:00', '2024-07-11T00:00', '2024-07-12T00:00',
+      '2024-07-13T00:00', '2024-07-14T00:00', '2024-07-15T00:00', '2024-07-16T00:00',
+      '2024-07-17T00:00', '2024-07-18T00:00', '2024-07-19T00:00', '2024-07-20T00:00',
+      '2024-07-21T00:00', '2024-07-22T00:00', '2024-07-23T00:00', '2024-07-24T00:00',
+      '2024-07-25T00:00', '2024-07-26T00:00', '2024-07-27T00:00', '2024-07-28T00:00',
+      '2024-07-29T00:00', '2024-07-30T00:00', '2024-07-31T00:00'
     ],
     datasets: [
       {
         label: 'Cost',
-        data: [90, 120, 110, 100, 90, 80, 70, 60],
+        data: [
+          90, 120, 110, 100, 90, 80, 70, 60, 85, 95, 105, 115,
+          125, 130, 120, 110, 100, 90, 80, 70, 60, 75, 85, 95,
+          105, 115, 125, 135, 120, 110, 100
+        ],
         borderColor: 'rgba(75,192,192,1)',
         fill: true,
       },
@@ -106,6 +120,19 @@ function App() {
     }
   };
 
+  const SystemLoadWidgetData = {
+    'server1': {
+      networkUtilization: 24.4, // Example Network utilization value
+      temperatureMonitoring: 60, // Example temperature monitoring value in Celsius
+      powerConsumption: 450, // Example power consumption value in Watts
+    },
+    'server2': {
+      networkUtilization: 60.2, // Example Network utilization value
+      temperatureMonitoring: 55, // Example temperature monitoring value in Celsius
+      powerConsumption: 400, // Example power consumption value in Watts
+    },
+  };
+
   const currentServerData = HardwareUsageWidgetData[selectedServer] || {};
 
   return (
@@ -115,75 +142,82 @@ function App() {
         <Typography variant="h4">Dashboard Sample 1</Typography>
       </Box>
 
-      {/* System Usage */}
+      {/* User Role Selection */}
       <Box sx={{ mb: 2 }}>
-        
-        {/* <Typography variant="h6" gutterBottom>
-          System Usage
-        </Typography> */}
-        <Grid container spacing={2}>
-        <Grid item xs={12} md={6} sx={{ mt: 0 }}>
         <DropdownButton
-          id="dropdown-basic-button"
-          title={`Select Server (${selectedServer === 'server1' ? 'Server 1' : 'Server 2'})`}
-          onSelect={handleSelect}
+          id="dropdown-role-button"
+          title={`Role: ${userRole}`}
+          onSelect={handleRoleSelect}
           style={{ marginBottom: '10px' }}
         >
-          <Dropdown.Item eventKey="server1">Server 1</Dropdown.Item>
-          <Dropdown.Item eventKey="server2">Server 2</Dropdown.Item>
+          <Dropdown.Item eventKey="CEO">CEO</Dropdown.Item>
+          <Dropdown.Item eventKey="Tech">Tech</Dropdown.Item>
         </DropdownButton>
-        <Box sx={{ mt: 5 }}>
-        <SystemLoadWidget />
-        </Box>
-            
+      </Box>
+
+      {/* Widgets */}
+      <Box sx={{ mb: 2 }}>
+        <Grid container spacing={2}>
+          {userRole === 'CEO' && (
+            <Grid item xs={12}>
+              <Box sx={{ border: '1px solid black', p: 2 }}>
+                <DetailedCostAnalysisWidget 
+                  lineData={DetailedCostAnalysisWidgetData}
+                />
+              </Box>
+            </Grid>
+          )}
+
+          <Grid item xs={12} md={6}>
+            <DropdownButton
+              id="dropdown-basic-button"
+              title={`Select Server (${selectedServer === 'server1' ? 'Server 1' : 'Server 2'})`}
+              onSelect={handleServerSelect}
+              style={{ marginBottom: '10px' }}
+            >
+              <Dropdown.Item eventKey="server1">Server 1</Dropdown.Item>
+              <Dropdown.Item eventKey="server2">Server 2</Dropdown.Item>
+            </DropdownButton>
+            <Box sx={{ mt: 5 }}>
+              <SystemLoadWidget 
+                selectedServer={selectedServer}
+                serverData={SystemLoadWidgetData}
+              />
+            </Box>
           </Grid>
+
           <Grid item xs={12} md={6}>
             {currentServerData.resources ? (
               <HardwareUsageWidget 
                 selectedServer={selectedServer}
                 data={currentServerData.resources}
-                handleServerChange={handleSelect}
+                handleServerChange={handleServerSelect}
               />
             ) : (
               <Typography variant="body1" color="error">No data available for the selected server.</Typography>
             )}
           </Grid>
+
+          {userRole === 'Tech' && (
+            <>
+              <Grid item xs={12}>
+                <Box sx={{ border: '1px solid black', p: 2 }}>
+                  <RealTimeUtilizationWidget 
+                    selectedServer={selectedServer}
+                    serverData={RealTimeUtilizationWidgetData}
+                  />
+                </Box>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Box sx={{ border: '1px solid black', p: 2 }}>
+                  <NetworkTrafficWidget />
+                </Box>
+              </Grid>
+            </>
+          )}
+
         </Grid>
-      </Box>
-
-      {/* Real Time Utilization Widget */}
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          Real Time Utilization
-        </Typography>
-        <Box sx={{ border: '1px solid black', p: 2 }}>
-          <RealTimeUtilizationWidget 
-            selectedServer={selectedServer}
-            serverData={RealTimeUtilizationWidgetData}
-          />
-        </Box>
-      </Box>
-
-      {/* Detailed Cost Analysis Widget */}
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          Detailed Cost Analysis
-        </Typography>
-        <Box sx={{ border: '1px solid black', p: 2 }}>
-          <DetailedCostAnalysisWidget 
-            lineData={DetailedCostAnalysisWidgetData}
-          />
-        </Box>
-      </Box>
-
-
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          Network Traffic Analysis
-        </Typography>
-        <Box sx={{ border: '1px solid black', p: 2 }}>
-        <NetworkTrafficWidget />
-        </Box>
       </Box>
     </Container>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { Line, Doughnut } from 'react-chartjs-2';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,33 +6,54 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement, TimeScale, Zoom } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import zoomPlugin from 'chartjs-plugin-zoom';
+import { Menu, MenuItem } from '@mui/material';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement, TimeScale, zoomPlugin);
 
-const DetailedCostAnalysisWidget = ({lineData}) => {
-  // Data for Line Chart
-  // const lineData = {
-  //   labels: [
-  //     '2024-07-01T00:00', '2024-07-02T00:00', '2024-07-03T00:00', '2024-07-04T00:00',
-  //     '2024-07-05T00:00', '2024-07-06T00:00', '2024-07-07T00:00', '2024-07-08T00:00'
-  //   ],
-  //   datasets: [
-  //     {
-  //       label: 'Cost',
-  //       data: [150, 120, 110, 100, 90, 80, 70, 60],
-  //       borderColor: 'rgba(75,192,192,1)',
-  //       fill: true,
-  //     },
-  //   ],
-  // };
+const DetailedCostAnalysisWidget = ({ lineData }) => {
+  const [menuPosition, setMenuPosition] = useState(null);
+  const [clickedElement, setClickedElement] = useState(null);
 
-  // Event Handlers
   const handleLineClick = (event, elements) => {
     if (elements.length > 0) {
+      const { clientX, clientY } = event.native;
+      setMenuPosition({ mouseX: clientX, mouseY: clientY });
       const { index } = elements[0];
-      console.log(`Clicked on: ${lineData.labels[index]} : ${lineData.datasets[0].data[index]}`);
-      alert(`Clicked on Date: ${lineData.labels[index]} Value: ${lineData.datasets[0].data[index]}`);
+      setClickedElement({ index, type: 'line' });
     }
+  };
+
+  const handleDoughnutClick = (event, elements) => {
+    if (elements.length > 0) {
+      const { clientX, clientY } = event.native;
+      setMenuPosition({ mouseX: clientX, mouseY: clientY });
+      const { index } = elements[0];
+      setClickedElement({ index, type: 'doughnut' });
+    }
+  };
+
+  const handleClose = () => {
+    setMenuPosition(null);
+  };
+
+  const handleMenuClick = (action) => {
+    if (clickedElement) {
+      const { index, type } = clickedElement;
+      if (type === 'line') {
+        if (action === 'moreInfo') {
+          alert(`More info on Date: ${lineData.labels[index]} Value: ${lineData.datasets[0].data[index]}`);
+        } else if (action === 'remove') {
+          alert(`Remove from the chart: Date: ${lineData.labels[index]} Value: ${lineData.datasets[0].data[index]}`);
+        }
+      } else if (type === 'doughnut') {
+        if (action === 'moreInfo') {
+          alert(`More info on: ${doughnutData.labels[index]} Value: ${doughnutData.datasets[0].data[index]}`);
+        } else if (action === 'remove') {
+          alert(`Remove from the chart: ${doughnutData.labels[index]} Value: ${doughnutData.datasets[0].data[index]}`);
+        }
+      }
+    }
+    handleClose();
   };
 
   const handleLineHover = (event, elements) => {
@@ -79,7 +100,6 @@ const DetailedCostAnalysisWidget = ({lineData}) => {
     },
   };
 
-  // Data for Doughnut Chart
   const doughnutData = {
     labels: ['ASR', 'MNAZURUESRGROUP'],
     datasets: [
@@ -91,19 +111,10 @@ const DetailedCostAnalysisWidget = ({lineData}) => {
     ],
   };
 
-  const handleDoughnutClick = (event, elements) => {
-    if (elements.length > 0) {
-      const { index } = elements[0];
-      console.log(`Clicked on: ${doughnutData.labels[index]}`);
-      alert(`Clicked on: ${doughnutData.labels[index]} Value: ${doughnutData.datasets[0].data[index]}`);
-    }
-  };
-
   const doughnutOptions = {
     onClick: handleDoughnutClick,
   };
 
-  // Data for Costs by Service
   const services = [
     { name: 'Shared App Service Hours - Azure App Service', cost: 21.41 },
     { name: 'VM replicated to Azure - Site Recovery', cost: 12.90 },
@@ -122,14 +133,14 @@ const DetailedCostAnalysisWidget = ({lineData}) => {
   return (
     <Container>
       <Row>
-        <Col md={8}>
+        <Col md={6}>
           <Row>
             <Col md={12}>
               <Card className="mb-4">
                 <Card.Body>
                   <Card.Title>Burn Rate</Card.Title>
                   <Line data={lineData} options={lineOptions} />
-                  <p>Starting Credit: 180 USD</p>
+                  <p>Starting Credit: 150 USD</p>
                   <p>Credit Remaining: 60 USD</p>
                 </Card.Body>
               </Card>
@@ -148,7 +159,7 @@ const DetailedCostAnalysisWidget = ({lineData}) => {
             </Col>
           </Row>
         </Col>
-        <Col md={4}>
+        <Col md={6}>
           <Card className="mb-4">
             <Card.Body>
               <Card.Title>Costs by Service</Card.Title>
@@ -162,6 +173,16 @@ const DetailedCostAnalysisWidget = ({lineData}) => {
           </Card>
         </Col>
       </Row>
+
+      <Menu
+        anchorReference="anchorPosition"
+        anchorPosition={menuPosition ? { top: menuPosition.mouseY, left: menuPosition.mouseX } : undefined}
+        open={Boolean(menuPosition)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={() => handleMenuClick('moreInfo')}>More Info</MenuItem>
+        <MenuItem onClick={() => handleMenuClick('remove')}>Remove from Chart</MenuItem>
+      </Menu>
     </Container>
   );
 };

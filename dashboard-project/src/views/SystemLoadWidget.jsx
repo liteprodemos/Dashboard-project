@@ -1,40 +1,68 @@
 // src/SystemLoadWidget.js
-import React from 'react';
-import { Grid, Card, CardContent, Typography } from '@mui/material';
+// eslint-disable-next-line
+import React, { useState } from 'react';
+// eslint-disable-next-line
+import { Grid, Card, CardContent, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 
-const SystemLoadWidget = () => {
-  const cpuUtilization = 46.2; // Example CPU utilization value
-  const gpuUtilization = 92.5; // Example GPU utilization value
-  const cpuTemperature = 65; // Example CPU temperature value in Celsius
-  const gpuTemperature = 48; // Example GPU temperature value in Celsius
+const SystemLoadWidget = ({selectedServer, serverData}) => {
+  // const [selectedServer, setSelectedServer] = useState('server1');
+
+  // const serverData = {
+  //   'server1': {
+  //     networkUtilization: 75.4, // Example Network utilization value
+  //     temperatureMonitoring: 60, // Example temperature monitoring value in Celsius
+  //     powerConsumption: 450, // Example power consumption value in Watts
+  //   },
+  //   'server2': {
+  //     networkUtilization: 60.2, // Example Network utilization value
+  //     temperatureMonitoring: 55, // Example temperature monitoring value in Celsius
+  //     powerConsumption: 400, // Example power consumption value in Watts
+  //   },
+  // };
+// eslint-disable-next-line
+  const handleServerChange = (event) => {
+    // setSelectedServer(event.target.value);
+  };
+
+  const { networkUtilization, temperatureMonitoring, powerConsumption } = serverData[selectedServer];
 
   // Event Handlers
   const handleClick = (label) => {
     console.log(`Clicked on: ${label}`);
     alert(label);
   };
-  // eslint-disable-next-line
-  const handleHover = (label) => {
-    console.log(`Hovering over: ${label}`);
-  };
 
   return (
     <Grid container spacing={2}>
-      {/* CPU Utilization Gauge */}
-      <Grid item xs={12} sm={6} md={3}>
+      {/* <Grid item xs={12}>
+        <FormControl fullWidth>
+          <InputLabel id="server-select-label">Select Server</InputLabel>
+          <Select
+            labelId="server-select-label"
+            id="server-select"
+            value={selectedServer}
+            onChange={handleServerChange}
+          >
+            <MenuItem value="server1">Server 1</MenuItem>
+            <MenuItem value="server2">Server 2</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid> */}
+
+      {/* Network Utilization Gauge */}
+      <Grid item xs={12} sm={6} md={4}>
         <Card
-          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white' }}
-          onClick={() => handleClick('CPU Utilization is '+cpuUtilization+'%')}
-          // onMouseOver={() => handleHover('CPU Utilization')}
+          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }} // Fixed height applied here
+          onClick={() => handleClick('Network Utilization is ' + networkUtilization + '%')}
         >
           <CardContent>
             <Typography variant="h7" gutterBottom style={{ color: 'black' }}>
-              CPU Utilization
+              Network Utilization
             </Typography>
             <div style={{ height: '150px' }}>
               <Gauge
-                value={cpuUtilization}
+                value={networkUtilization}
                 startAngle={-110}
                 endAngle={110}
                 min={0}
@@ -47,27 +75,26 @@ const SystemLoadWidget = () => {
                     fill: '#4caf50',
                   },
                 }}
-                text={({ value, max }) => `${value}%`}
+                text={({ value }) => `${value}%`}
               />
             </div>
           </CardContent>
         </Card>
       </Grid>
 
-      {/* GPU Utilization Gauge */}
-      <Grid item xs={12} sm={6} md={3}>
+      {/* Temperature Monitoring Gauge */}
+      <Grid item xs={12} sm={6} md={4}>
         <Card
-          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white' }}
-          onClick={() => handleClick('GPU Utilization is '+gpuUtilization+'%')}
-          // onMouseOver={() => handleHover('GPU Utilization')}
+          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }} // Fixed height applied here
+          onClick={() => handleClick('Temperature Monitoring is ' + temperatureMonitoring + '°C')}
         >
           <CardContent>
             <Typography variant="h7" gutterBottom style={{ color: 'black' }}>
-              GPU Utilization
+              Temperature Monitoring
             </Typography>
             <div style={{ height: '150px' }}>
               <Gauge
-                value={gpuUtilization}
+                value={temperatureMonitoring}
                 startAngle={-110}
                 endAngle={110}
                 min={0}
@@ -80,31 +107,30 @@ const SystemLoadWidget = () => {
                     fill: '#4caf50',
                   },
                 }}
-                text={({ value, max }) => `${value}%`}
+                text={({ value }) => `${value}°C`}
               />
             </div>
           </CardContent>
         </Card>
       </Grid>
 
-      {/* CPU Temperature Gauge */}
-      <Grid item xs={12} sm={6} md={3}>
+      {/* Power Consumption Gauge */}
+      <Grid item xs={12} sm={6} md={4}>
         <Card
-          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white' }}
-          onClick={() => handleClick('CPU Temperature is '+cpuTemperature+'C')}
-          // onMouseOver={() => handleHover('CPU Temperature')}
+          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }} // Fixed height applied here
+          onClick={() => handleClick('Power Consumption is ' + powerConsumption + 'W')}
         >
           <CardContent>
             <Typography variant="h7" gutterBottom style={{ color: 'black' }}>
-              CPU Temperature
+              Power Consumption
             </Typography>
             <div style={{ height: '150px' }}>
               <Gauge
-                value={cpuTemperature}
+                value={powerConsumption/10}
                 startAngle={-110}
                 endAngle={110}
                 min={0}
-                max={100}
+                max={500} // Adjusted max value to better fit the range of power consumption
                 thickness={22}
                 sx={{
                   [`& .${gaugeClasses.valueText}`]: {
@@ -113,40 +139,7 @@ const SystemLoadWidget = () => {
                     fill: '#4caf50',
                   },
                 }}
-                text={({ value, max }) => `${value}C`}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      {/* GPU Temperature Gauge */}
-      <Grid item xs={12} sm={6} md={3}>
-        <Card
-          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white' }}
-          onClick={() => handleClick('GPU Temperature is '+gpuTemperature+'C')}
-          // onMouseOver={() => handleHover('GPU Temperature')}
-        >
-          <CardContent>
-            <Typography variant="h7" gutterBottom style={{ color: 'black' }}>
-              GPU Temperature
-            </Typography>
-            <div style={{ height: '150px' }}>
-              <Gauge
-                value={gpuTemperature}
-                startAngle={-110}
-                endAngle={110}
-                min={0}
-                max={100}
-                thickness={22}
-                sx={{
-                  [`& .${gaugeClasses.valueText}`]: {
-                    fontSize: 18,
-                    transform: 'translate(0px, 0px)',
-                    fill: '#4caf50',
-                  },
-                }}
-                text={({ value, max }) => `${value}C`}
+                text={({ value }) => `${value * 10}W`}
               />
             </div>
           </CardContent>
