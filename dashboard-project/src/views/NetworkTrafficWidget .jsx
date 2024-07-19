@@ -1,39 +1,101 @@
-import React, { useState } from 'react';
-import { Box, Typography, TextField, Grid, Switch, FormControlLabel, MenuItem, Select } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Grid, MenuItem, Select } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 
-const NetworkTrafficWidget = () => {
-  const staticTrafficData = {
-    labels: Array.from({ length: 72 }, (_, i) => new Date(2024, 6, Math.floor(i / 24) + 1, i % 24)),
-    datasets: [
-      {
-        label: 'Outgoing Traffic',
-        data: [
-          500, 600, 550, 700, 800, 750, 600, 700, 850, 900, 950, 800, 700, 600, 750, 800, 850, 700, 650, 600, 700, 750, 800, 700,
-          650, 700, 800, 850, 900, 950, 800, 700, 600, 750, 800, 850, 700, 650, 600, 700, 750, 800, 700, 650, 700, 800, 850, 900,
-          950, 800, 700, 600, 750, 800, 850, 700, 650, 600, 700, 750, 800, 700, 650, 700, 800, 850, 900, 950, 800, 700, 600, 750
-        ],
-        borderColor: 'blue',
-        fill: false,
+const trafficData = {
+  HTTP: {
+    '192.168.0.1': {
+      '192.168.0.2': {
+        outgoing: [100, 150, 120, 180, 200, 170, 160, 210],
+        incoming: [200, 250, 220, 280, 300, 270, 260, 310],
       },
-      {
-        label: 'Incoming Traffic',
-        data: [
-          300, 400, 350, 500, 600, 550, 400, 500, 650, 700, 750, 600, 500, 400, 550, 600, 650, 500, 450, 400, 500, 550, 600, 500,
-          450, 500, 600, 650, 700, 750, 600, 500, 400, 550, 600, 650, 500, 450, 400, 500, 550, 600, 500, 450, 500, 600, 650, 700,
-          750, 600, 500, 400, 550, 600, 650, 500, 450, 400, 500, 550, 600, 500, 450, 500, 600, 650, 700, 750, 600, 500, 400, 550
-        ],
-        borderColor: 'red',
-        fill: false,
+      '192.168.0.3': {
+        outgoing: [110, 140, 130, 170, 210, 180, 170, 220],
+        incoming: [210, 260, 230, 290, 310, 280, 270, 320],
       },
-    ],
-  };
+    },
+    '192.168.0.2': {
+      '192.168.0.1': {
+        outgoing: [120, 130, 140, 150, 160, 170, 180, 190],
+        incoming: [220, 230, 240, 250, 260, 270, 280, 290],
+      },
+    },
+  },
+  HTTPS: {
+    '192.168.0.1': {
+      '192.168.0.2': {
+        outgoing: [300, 350, 320, 380, 400, 370, 360, 410],
+        incoming: [400, 450, 420, 480, 500, 470, 460, 510],
+      },
+      '192.168.0.3': {
+        outgoing: [310, 340, 330, 370, 410, 380, 370, 420],
+        incoming: [410, 460, 430, 490, 510, 480, 470, 520],
+      },
+    },
+    '192.168.0.2': {
+      '192.168.0.1': {
+        outgoing: [320, 330, 340, 350, 360, 370, 380, 390],
+        incoming: [420, 430, 440, 450, 460, 470, 480, 490],
+      },
+    },
+  },
+};
 
+const NetworkTrafficWidget = () => {
   const [protocol, setProtocol] = useState('HTTP');
-  const [sourceIP, setSourceIP] = useState('');
-  const [destinationIP, setDestinationIP] = useState('');
-  const [trafficData] = useState(staticTrafficData);
+  const [sourceIP, setSourceIP] = useState('192.168.0.1');
+  const [destinationIP, setDestinationIP] = useState('192.168.0.2');
+  const [filteredData, setFilteredData] = useState({
+    labels: Array.from({ length: 8 }, (_, i) => new Date(2024, 6, Math.floor(i / 8) + 1, i % 8)),
+    datasets: [],
+  });
+
+  useEffect(() => {
+    // Check if data exists for the selected protocol, sourceIP, and destinationIP
+    const protocolData = trafficData[protocol];
+    const sourceData = protocolData ? protocolData[sourceIP] : null;
+    const destinationData = sourceData ? sourceData[destinationIP] : null;
+
+    if (destinationData) {
+      setFilteredData({
+        labels: Array.from({ length: 8 }, (_, i) => new Date(2024, 6, Math.floor(i / 8) + 1, i % 8)),
+        datasets: [
+          {
+            label: `${protocol} Outgoing Traffic`,
+            data: destinationData.outgoing,
+            borderColor: protocol === 'HTTP' ? 'blue' : 'red',
+            fill: false,
+          },
+          {
+            label: `${protocol} Incoming Traffic`,
+            data: destinationData.incoming,
+            borderColor: protocol === 'HTTP' ? 'green' : 'purple',
+            fill: false,
+          },
+        ],
+      });
+    } else {
+      // Set empty data if no data is available
+      setFilteredData({
+        labels: Array.from({ length: 8 }, (_, i) => new Date(2024, 6, Math.floor(i / 8) + 1, i % 8)),
+        datasets: [
+          {
+            label: `${protocol} Outgoing Traffic`,
+            data: [],
+            borderColor: protocol === 'HTTP' ? 'blue' : 'red',
+            fill: false,
+          },
+          {
+            label: `${protocol} Incoming Traffic`,
+            data: [],
+            borderColor: protocol === 'HTTP' ? 'green' : 'purple',
+            fill: false,
+          },
+        ],
+      });
+    }
+  }, [protocol, sourceIP, destinationIP]);
 
   const handleProtocolChange = (event) => {
     setProtocol(event.target.value);
@@ -54,39 +116,33 @@ const NetworkTrafficWidget = () => {
       </Typography>
       <Grid container spacing={2} alignItems="center">
         <Grid item>
-          <FormControlLabel
-            control={<Switch checked={protocol === 'HTTPS'} onChange={handleProtocolChange} />}
-            label={protocol}
-          />
-        </Grid>
-        <Grid item>
           <Select value={protocol} onChange={handleProtocolChange}>
             <MenuItem value="HTTP">HTTP</MenuItem>
             <MenuItem value="HTTPS">HTTPS</MenuItem>
           </Select>
         </Grid>
         <Grid item>
-          <TextField
-            label="Source IP"
-            variant="outlined"
-            size="small"
-            value={sourceIP}
-            onChange={handleSourceIPChange}
-          />
+          <Select value={sourceIP} onChange={handleSourceIPChange}>
+            {Object.keys(trafficData[protocol]).map((ip) => (
+              <MenuItem key={ip} value={ip}>
+                {ip}
+              </MenuItem>
+            ))}
+          </Select>
         </Grid>
         <Grid item>
-          <TextField
-            label="Destination IP"
-            variant="outlined"
-            size="small"
-            value={destinationIP}
-            onChange={handleDestinationIPChange}
-          />
+          <Select value={destinationIP} onChange={handleDestinationIPChange}>
+            {Object.keys(trafficData[protocol][sourceIP] || {}).map((ip) => (
+              <MenuItem key={ip} value={ip}>
+                {ip}
+              </MenuItem>
+            ))}
+          </Select>
         </Grid>
       </Grid>
       <Box sx={{ mt: 2 }}>
         <Line
-          data={trafficData}
+          data={filteredData}
           options={{
             scales: {
               x: {
@@ -115,16 +171,6 @@ const NetworkTrafficWidget = () => {
               tooltip: {
                 mode: 'index',
                 intersect: false,
-              },
-              zoom: {
-                pan: {
-                  enabled: true,
-                  mode: 'xy',
-                },
-                zoom: {
-                  enabled: true,
-                  mode: 'xy',
-                },
               },
             },
             responsive: true,

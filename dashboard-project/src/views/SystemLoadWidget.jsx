@@ -35,14 +35,14 @@ const SystemLoadWidget = ({ selectedServer, serverData }) => {
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6} md={4}>
         <Card
-          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }}
+          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '300px' }}
           onClick={(event) => handleCardClick(event, 'Network Utilization is ' + networkUtilization + '%')}
         >
           <CardContent>
             <Typography variant="h7" gutterBottom style={{ color: 'black' }}>
               Network Utilization
             </Typography>
-            <div style={{ height: '150px' }}>
+            <div style={{ height: '200px' }}>
               <Gauge
                 value={networkUtilization}
                 startAngle={-110}
@@ -66,14 +66,14 @@ const SystemLoadWidget = ({ selectedServer, serverData }) => {
 
       <Grid item xs={12} sm={6} md={4}>
         <Card
-          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }}
+          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '300px' }}
           onClick={(event) => handleCardClick(event, 'Temperature Monitoring is ' + temperatureMonitoring + '°C')}
         >
           <CardContent>
             <Typography variant="h7" gutterBottom style={{ color: 'black' }}>
               Temperature Monitoring
             </Typography>
-            <div style={{ height: '150px' }}>
+            <div style={{ height: '200px' }}>
               <Gauge
                 value={temperatureMonitoring}
                 startAngle={-110}
@@ -97,14 +97,14 @@ const SystemLoadWidget = ({ selectedServer, serverData }) => {
 
       <Grid item xs={12} sm={6} md={4}>
         <Card
-          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }}
+          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '300px' }}
           onClick={(event) => handleCardClick(event, 'Power Consumption is ' + powerConsumption + 'W')}
         >
           <CardContent>
             <Typography variant="h7" gutterBottom style={{ color: 'black' }}>
               Power Consumption
             </Typography>
-            <div style={{ height: '150px' }}>
+            <div style={{ height: '200px' }}>
               <Gauge
                 value={powerConsumption / 10}
                 startAngle={-110}

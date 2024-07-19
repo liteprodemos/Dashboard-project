@@ -1,4 +1,5 @@
 // npm run deploy
+
 // import logo from './logo.svg';
 import './App.css';
 // eslint-disable-next-line
@@ -137,89 +138,98 @@ function App() {
 
   return (
     <Container>
-      {/* Header */}
-      <Box sx={{ bgcolor: 'primary.main', color: 'white', p: 2, mb: 2 }}>
-        <Typography variant="h4">Dashboard Sample 1</Typography>
-      </Box>
+    {/* Header */}
+    <Box sx={{ bgcolor: 'primary.main', color: 'white', p: 2, mb: 2 }}>
+      <Typography variant="h4">Dashboard Sample 1</Typography>
+    </Box>
 
-      {/* User Role Selection */}
-      <Box sx={{ mb: 2 }}>
-        <DropdownButton
-          id="dropdown-role-button"
-          title={`Role: ${userRole}`}
-          onSelect={handleRoleSelect}
-          style={{ marginBottom: '10px' }}
-        >
-          <Dropdown.Item eventKey="CEO">CEO</Dropdown.Item>
-          <Dropdown.Item eventKey="Tech">Tech</Dropdown.Item>
-        </DropdownButton>
-      </Box>
+    {/* Filters Section */}
+    <Box sx={{ mb: 2 }}>
+     
+      <Grid container spacing={2}>
+      <Grid item xs={12} md={1}>
+      <Typography variant="h6" gutterBottom>Filters</Typography>
+        </Grid>
+        <Grid item xs={12} md={2}>
+          <DropdownButton
+            id="dropdown-role-button"
+            title={`Role: ${userRole}`}
+            onSelect={handleRoleSelect}
+            style={{ width: '100%' }}
+          >
+            <Dropdown.Item eventKey="CEO">CEO</Dropdown.Item>
+            <Dropdown.Item eventKey="Tech">Tech</Dropdown.Item>
+          </DropdownButton>
+        </Grid>
+        <Grid item xs={12} md={2}>
+          <DropdownButton
+            id="dropdown-server-button"
+            title={`Select Server (${selectedServer === 'server1' ? 'Server 1' : 'Server 2'})`}
+            onSelect={handleServerSelect}
+            style={{ width: '100%' }}
+          >
+            <Dropdown.Item eventKey="server1">Server 1</Dropdown.Item>
+            <Dropdown.Item eventKey="server2">Server 2</Dropdown.Item>
+          </DropdownButton>
+        </Grid>
+      </Grid>
+    </Box>
 
-      {/* Widgets */}
-      <Box sx={{ mb: 2 }}>
-        <Grid container spacing={2}>
-          {userRole === 'CEO' && (
-            <Grid item xs={12}>
-              <Box sx={{ border: '1px solid black', p: 2 }}>
-                <DetailedCostAnalysisWidget 
-                  lineData={DetailedCostAnalysisWidgetData}
-                />
-              </Box>
-            </Grid>
-          )}
-
-          <Grid item xs={12} md={6}>
-            <DropdownButton
-              id="dropdown-basic-button"
-              title={`Select Server (${selectedServer === 'server1' ? 'Server 1' : 'Server 2'})`}
-              onSelect={handleServerSelect}
-              style={{ marginBottom: '10px' }}
-            >
-              <Dropdown.Item eventKey="server1">Server 1</Dropdown.Item>
-              <Dropdown.Item eventKey="server2">Server 2</Dropdown.Item>
-            </DropdownButton>
-            <Box sx={{ mt: 5 }}>
-              <SystemLoadWidget 
-                selectedServer={selectedServer}
-                serverData={SystemLoadWidgetData}
+    {/* Widgets */}
+    <Box sx={{ mb: 2 }}>
+      <Grid container spacing={2}>
+        {userRole === 'CEO' && (
+          <Grid item xs={12}>
+            <Box sx={{ border: '1px solid black', p: 2 }}>
+              <DetailedCostAnalysisWidget 
+                lineData={DetailedCostAnalysisWidgetData}
               />
             </Box>
           </Grid>
+        )}
 
-          <Grid item xs={12} md={6}>
-            {currentServerData.resources ? (
-              <HardwareUsageWidget 
-                selectedServer={selectedServer}
-                data={currentServerData.resources}
-                handleServerChange={handleServerSelect}
-              />
-            ) : (
-              <Typography variant="body1" color="error">No data available for the selected server.</Typography>
-            )}
-          </Grid>
-
-          {userRole === 'Tech' && (
-            <>
-              <Grid item xs={12}>
-                <Box sx={{ border: '1px solid black', p: 2 }}>
-                  <RealTimeUtilizationWidget 
-                    selectedServer={selectedServer}
-                    serverData={RealTimeUtilizationWidgetData}
-                  />
-                </Box>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Box sx={{ border: '1px solid black', p: 2 }}>
-                  <NetworkTrafficWidget />
-                </Box>
-              </Grid>
-            </>
-          )}
-
+        <Grid item xs={12} md={6}>
+          <Box sx={{ mt: 5 }}>
+            <SystemLoadWidget 
+              selectedServer={selectedServer}
+              serverData={SystemLoadWidgetData}
+            />
+          </Box>
         </Grid>
-      </Box>
-    </Container>
+
+        <Grid item xs={12} md={6}>
+          {currentServerData.resources ? (
+            <HardwareUsageWidget 
+              selectedServer={selectedServer}
+              data={currentServerData.resources}
+              handleServerChange={handleServerSelect}
+            />
+          ) : (
+            <Typography variant="body1" color="error">No data available for the selected server.</Typography>
+          )}
+        </Grid>
+
+        {userRole === 'Tech' && (
+          <>
+            <Grid item xs={12}>
+              <Box sx={{ border: '1px solid black', p: 2 }}>
+                <RealTimeUtilizationWidget 
+                  selectedServer={selectedServer}
+                  serverData={RealTimeUtilizationWidgetData}
+                />
+              </Box>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Box sx={{ border: '1px solid black', p: 2 }}>
+                <NetworkTrafficWidget />
+              </Box>
+            </Grid>
+          </>
+        )}
+      </Grid>
+    </Box>
+  </Container>
   );
 }
 
