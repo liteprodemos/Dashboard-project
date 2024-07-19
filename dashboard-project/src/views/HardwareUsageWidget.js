@@ -1,27 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import 'chart.js/auto';
-// eslint-disable-next-line
-import { Box, MenuItem, Select, Typography, Grid, Card, CardContent } from '@mui/material';
+import { Box, MenuItem, Select, Typography, Grid, Card, CardContent, Menu } from '@mui/material';
 
 const chartOptions = (handleClick) => ({
   plugins: {
     legend: {
-      display: false
-    }
+      display: false,
+    },
   },
-  onClick: handleClick
+  onClick: handleClick,
 });
 
 const HardwareUsageWidget = ({ data, selectedServer, handleServerChange }) => {
+  const [menuPosition, setMenuPosition] = useState(null);
+  const [clickedElement, setClickedElement] = useState(null);
 
   const handleChartClick = (event, elements) => {
     if (elements.length > 0) {
       const chartElement = elements[0];
       const label = chartElement.element.$context.raw;
-      console.log(`Clicked on: ${label}`);
-      alert(`Clicked on: ${label}`);
+      setMenuPosition({ mouseX: event.native.clientX, mouseY: event.native.clientY });
+      setClickedElement(label);
     }
+  };
+
+  const handleClose = () => {
+    setMenuPosition(null);
+  };
+
+  const handleMenuClick = (action) => {
+    if (clickedElement) {
+      if (action === 'moreInfo') {
+        alert(`More info on: ${clickedElement}`);
+      } else if (action === 'restart') {
+        alert(`Restart the instance: ${clickedElement}`);
+      } else if (action === 'viewLog') {
+        alert(`View log for: ${clickedElement}`);
+      }
+    }
+    handleClose();
   };
 
   const chartData = (used, free) => ({
@@ -29,10 +47,10 @@ const HardwareUsageWidget = ({ data, selectedServer, handleServerChange }) => {
       {
         data: [used, free],
         backgroundColor: ['#FF6384', '#36A2EB'],
-        hoverOffset: 4
-      }
+        hoverOffset: 4,
+      },
     ],
-    labels: ['Used', 'Free']
+    labels: ['Used', 'Free'],
   });
 
   return (
@@ -97,6 +115,17 @@ const HardwareUsageWidget = ({ data, selectedServer, handleServerChange }) => {
           </Card>
         </Grid>
       </Grid>
+
+      <Menu
+        anchorReference="anchorPosition"
+        anchorPosition={menuPosition ? { top: menuPosition.mouseY, left: menuPosition.mouseX } : undefined}
+        open={Boolean(menuPosition)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={() => handleMenuClick('moreInfo')}>More Info</MenuItem>
+        <MenuItem onClick={() => handleMenuClick('restart')}>Restart the Instance</MenuItem>
+        <MenuItem onClick={() => handleMenuClick('viewLog')}>View Log</MenuItem>
+      </Menu>
     </Box>
   );
 };

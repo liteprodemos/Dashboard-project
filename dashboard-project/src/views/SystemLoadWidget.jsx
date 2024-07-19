@@ -1,60 +1,42 @@
-// src/SystemLoadWidget.js
-// eslint-disable-next-line
 import React, { useState } from 'react';
-// eslint-disable-next-line
-import { Grid, Card, CardContent, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Grid, Card, CardContent, Typography, Menu, MenuItem } from '@mui/material';
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 
-const SystemLoadWidget = ({selectedServer, serverData}) => {
-  // const [selectedServer, setSelectedServer] = useState('server1');
+const SystemLoadWidget = ({ selectedServer, serverData }) => {
+  const [menuPosition, setMenuPosition] = useState(null);
+  const [clickedElement, setClickedElement] = useState(null);
 
-  // const serverData = {
-  //   'server1': {
-  //     networkUtilization: 75.4, // Example Network utilization value
-  //     temperatureMonitoring: 60, // Example temperature monitoring value in Celsius
-  //     powerConsumption: 450, // Example power consumption value in Watts
-  //   },
-  //   'server2': {
-  //     networkUtilization: 60.2, // Example Network utilization value
-  //     temperatureMonitoring: 55, // Example temperature monitoring value in Celsius
-  //     powerConsumption: 400, // Example power consumption value in Watts
-  //   },
-  // };
-// eslint-disable-next-line
-  const handleServerChange = (event) => {
-    // setSelectedServer(event.target.value);
+  const handleCardClick = (event, label) => {
+    const { clientX, clientY } = event;
+    setMenuPosition({ mouseX: clientX, mouseY: clientY });
+    setClickedElement(label);
+  };
+
+  const handleClose = () => {
+    setMenuPosition(null);
+  };
+
+  const handleMenuClick = (action) => {
+    if (clickedElement) {
+      if (action === 'moreInfo') {
+        alert(`More info on: ${clickedElement}`);
+      } else if (action === 'restart') {
+        alert(`Restart the instance: ${clickedElement}`);
+      } else if (action === 'viewLog') {
+        alert(`View log for: ${clickedElement}`);
+      }
+    }
+    handleClose();
   };
 
   const { networkUtilization, temperatureMonitoring, powerConsumption } = serverData[selectedServer];
 
-  // Event Handlers
-  const handleClick = (label) => {
-    console.log(`Clicked on: ${label}`);
-    alert(label);
-  };
-
   return (
     <Grid container spacing={2}>
-      {/* <Grid item xs={12}>
-        <FormControl fullWidth>
-          <InputLabel id="server-select-label">Select Server</InputLabel>
-          <Select
-            labelId="server-select-label"
-            id="server-select"
-            value={selectedServer}
-            onChange={handleServerChange}
-          >
-            <MenuItem value="server1">Server 1</MenuItem>
-            <MenuItem value="server2">Server 2</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid> */}
-
-      {/* Network Utilization Gauge */}
       <Grid item xs={12} sm={6} md={4}>
         <Card
-          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }} // Fixed height applied here
-          onClick={() => handleClick('Network Utilization is ' + networkUtilization + '%')}
+          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }}
+          onClick={(event) => handleCardClick(event, 'Network Utilization is ' + networkUtilization + '%')}
         >
           <CardContent>
             <Typography variant="h7" gutterBottom style={{ color: 'black' }}>
@@ -82,11 +64,10 @@ const SystemLoadWidget = ({selectedServer, serverData}) => {
         </Card>
       </Grid>
 
-      {/* Temperature Monitoring Gauge */}
       <Grid item xs={12} sm={6} md={4}>
         <Card
-          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }} // Fixed height applied here
-          onClick={() => handleClick('Temperature Monitoring is ' + temperatureMonitoring + '°C')}
+          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }}
+          onClick={(event) => handleCardClick(event, 'Temperature Monitoring is ' + temperatureMonitoring + '°C')}
         >
           <CardContent>
             <Typography variant="h7" gutterBottom style={{ color: 'black' }}>
@@ -114,11 +95,10 @@ const SystemLoadWidget = ({selectedServer, serverData}) => {
         </Card>
       </Grid>
 
-      {/* Power Consumption Gauge */}
       <Grid item xs={12} sm={6} md={4}>
         <Card
-          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }} // Fixed height applied here
-          onClick={() => handleClick('Power Consumption is ' + powerConsumption + 'W')}
+          sx={{ width: '100%', backgroundColor: '#cccccc', color: 'white', height: '250px' }}
+          onClick={(event) => handleCardClick(event, 'Power Consumption is ' + powerConsumption + 'W')}
         >
           <CardContent>
             <Typography variant="h7" gutterBottom style={{ color: 'black' }}>
@@ -126,11 +106,11 @@ const SystemLoadWidget = ({selectedServer, serverData}) => {
             </Typography>
             <div style={{ height: '150px' }}>
               <Gauge
-                value={powerConsumption/10}
+                value={powerConsumption / 10}
                 startAngle={-110}
                 endAngle={110}
                 min={0}
-                max={500} // Adjusted max value to better fit the range of power consumption
+                max={500}
                 thickness={22}
                 sx={{
                   [`& .${gaugeClasses.valueText}`]: {
@@ -145,6 +125,17 @@ const SystemLoadWidget = ({selectedServer, serverData}) => {
           </CardContent>
         </Card>
       </Grid>
+
+      <Menu
+        anchorReference="anchorPosition"
+        anchorPosition={menuPosition ? { top: menuPosition.mouseY, left: menuPosition.mouseX } : undefined}
+        open={Boolean(menuPosition)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={() => handleMenuClick('moreInfo')}>More Info</MenuItem>
+        <MenuItem onClick={() => handleMenuClick('restart')}>Restart the Instance</MenuItem>
+        <MenuItem onClick={() => handleMenuClick('viewLog')}>View Log</MenuItem>
+      </Menu>
     </Grid>
   );
 };
