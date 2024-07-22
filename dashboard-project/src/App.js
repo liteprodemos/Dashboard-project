@@ -29,7 +29,8 @@ import { Card, Dropdown, DropdownButton } from 'react-bootstrap';
 import React, { useState } from 'react';
 function App() {
   const [selectedServer, setSelectedServer] = useState('server1');
-  const [userRole, setUserRole] = useState('CEO'); // Default role
+  // const [userRole, setUserRole] = useState('CEO'); // Default role
+  const [userRole, setUserRole] = useState('ALL');
 
   const handleServerSelect = (event) => {
     setSelectedServer(event);
@@ -65,16 +66,57 @@ function App() {
 
   const RealTimeUtilizationWidgetData = {
     server1: {
-      responseTime: [100, 150, 50, 200, 250, 100, 300, 80, 220, 160, 140, 180, 120],
-      networkTraffic: [500, 450, 300, 600, 700, 500, 650, 550, 750, 800, 650, 700, 600],
-      instructionsHandled: [700, 650, 500, 800, 900, 700, 850, 750, 950, 1000, 850, 900, 800],
+      responseTime: [
+        100, 150, 50, 200, 250, 100, 300, 80, 220, 160, 140, 180, 120,
+        100, 150, 50, 200, 250, 100, 300, 80, 220, 160, 140, 180, 120,
+        100, 150, 50, 200, 250, 100, 300, 80, 220, 160, 140, 180, 120,
+        100, 150, 50, 200, 250, 100, 300, 80, 220, 160, 140, 180, 120
+      ],
+      networkTraffic: [
+        500, 450, 300, 600, 700, 500, 650, 550, 750, 800, 650, 700, 600,
+        500, 450, 300, 600, 700, 500, 650, 550, 750, 800, 650, 700, 600,
+        500, 450, 300, 600, 700, 500, 650, 550, 750, 800, 650, 700, 600,
+        500, 450, 300, 600, 700, 500, 650, 550, 750, 800, 650, 700, 600
+      ],
+      instructionsHandled: [
+        700, 650, 500, 800, 900, 700, 850, 750, 950, 1000, 850, 900, 800,
+        700, 650, 500, 800, 900, 700, 850, 750, 950, 1000, 850, 900, 800,
+        700, 650, 500, 800, 900, 700, 850, 750, 950, 1000, 850, 900, 800,
+        700, 650, 500, 800, 900, 700, 850, 750, 950, 1000, 850, 900, 800
+      ]
     },
     server2: {
-      responseTime: [200, 180, 220, 160, 140, 200, 120, 250, 300, 150, 170, 130, 190],
-      networkTraffic: [250, 300, 400, 350, 450, 300, 500, 370, 450, 400, 350, 500, 320],
-      instructionsHandled: [400, 450, 550, 500, 600, 450, 650, 520, 600, 550, 500, 650, 470],
+      responseTime: [
+        200, 180, 220, 160, 140, 200, 120, 250, 300, 150, 170, 130, 190,
+        200, 180, 220, 160, 140, 200, 120, 250, 300, 150, 170, 130, 190,
+        200, 180, 220, 160, 140, 200, 120, 250, 300, 150, 170, 130, 190,
+        200, 180, 220, 160, 140, 200, 120, 250, 300, 150, 170, 130, 190
+      ],
+      networkTraffic: [
+        250, 300, 400, 350, 450, 300, 500, 370, 450, 400, 350, 500, 320,
+        250, 300, 400, 350, 450, 300, 500, 370, 450, 400, 350, 500, 320,
+        250, 300, 400, 350, 450, 300, 500, 370, 450, 400, 350, 500, 320,
+        250, 300, 400, 350, 450, 300, 500, 370, 450, 400, 350, 500, 320
+      ],
+      instructionsHandled: [
+        400, 450, 550, 500, 600, 450, 650, 520, 600, 550, 500, 650, 470,
+        400, 450, 550, 500, 600, 450, 650, 520, 600, 550, 500, 650, 470,
+        400, 450, 550, 500, 600, 450, 650, 520, 600, 550, 500, 650, 470,
+        400, 450, 550, 500, 600, 450, 650, 520, 600, 550, 500, 650, 470
+      ]
     },
+    labels: [
+      '1:00 AM', '1:05 AM', '1:10 AM', '1:15 AM', '1:20 AM', '1:25 AM',
+      '1:30 AM', '1:35 AM', '1:40 AM', '1:45 AM', '1:50 AM', '1:55 AM', '2:00 AM',
+      '2:05 AM', '2:10 AM', '2:15 AM', '2:20 AM', '2:25 AM', '2:30 AM',
+      '2:35 AM', '2:40 AM', '2:45 AM', '2:50 AM', '2:55 AM', '3:00 AM',
+      '3:05 AM', '3:10 AM', '3:15 AM', '3:20 AM', '3:25 AM', '3:30 AM',
+      '3:35 AM', '3:40 AM', '3:45 AM', '3:50 AM', '3:55 AM', '4:00 AM',
+      '4:05 AM', '4:10 AM', '4:15 AM', '4:20 AM', '4:25 AM', '4:30 AM',
+      '4:35 AM', '4:40 AM', '4:45 AM', '4:50 AM', '4:55 AM', '5:00 AM'
+    ]
   };
+  
 
   const HardwareUsageWidgetData = {
     server1: {
@@ -151,15 +193,16 @@ function App() {
       <Typography variant="h6" gutterBottom>Filters</Typography>
         </Grid>
         <Grid item xs={12} md={2}>
-          <DropdownButton
-            id="dropdown-role-button"
-            title={`Role: ${userRole}`}
-            onSelect={handleRoleSelect}
-            style={{ width: '100%' }}
-          >
-            <Dropdown.Item eventKey="CEO">CEO</Dropdown.Item>
-            <Dropdown.Item eventKey="Tech">Tech</Dropdown.Item>
-          </DropdownButton>
+        <DropdownButton
+          id="dropdown-role-button"
+          title={`Role: ${userRole}`}
+          onSelect={handleRoleSelect}
+          style={{ width: '100%' }}
+        >
+          <Dropdown.Item eventKey="CEO">CEO</Dropdown.Item>
+          <Dropdown.Item eventKey="Tech">Tech</Dropdown.Item>
+          <Dropdown.Item eventKey="ALL">ALL</Dropdown.Item> {/* Add this line */}
+        </DropdownButton>
         </Grid>
         <Grid item xs={12} md={2}>
           <DropdownButton
@@ -196,7 +239,7 @@ function App() {
             />
           </Box>
         </Grid>
-
+       
         <Grid item xs={12} md={6}>
           {currentServerData.resources ? (
             <HardwareUsageWidget 
@@ -208,7 +251,30 @@ function App() {
             <Typography variant="body1" color="error">No data available for the selected server.</Typography>
           )}
         </Grid>
-
+        {userRole === 'ALL' && (
+          <>
+          <Grid item xs={12}>
+              <Box sx={{ border: '1px solid black', p: 2 }}>
+                <RealTimeUtilizationWidget 
+                  selectedServer={selectedServer}
+                  serverData={RealTimeUtilizationWidgetData}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
+            <Box sx={{ border: '1px solid black', p: 2 }}>
+              <DetailedCostAnalysisWidget 
+                lineData={DetailedCostAnalysisWidgetData}
+              />
+            </Box>
+          </Grid>
+            <Grid item xs={12}>
+              <Box sx={{ border: '1px solid black', p: 2 }}>
+                <NetworkTrafficWidget />
+              </Box>
+            </Grid>
+          </>
+        )}
         {userRole === 'Tech' && (
           <>
             <Grid item xs={12}>
