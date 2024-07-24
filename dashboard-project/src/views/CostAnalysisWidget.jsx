@@ -84,7 +84,6 @@ const staticData = {
   optimizationSuggestions: [
     "Replace old hardware with energy-efficient servers to lower power consumption and cooling requirements.",
     "Implement predictive maintenance to foresee and address potential failures before they occur, reducing unplanned downtime.",
-    "Implement predictive maintenance to foresee and address potential failures before they occur, reducing unplanned downtime.",
   ],
 };
 

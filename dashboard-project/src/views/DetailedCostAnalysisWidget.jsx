@@ -7,22 +7,24 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import 'chartjs-adapter-date-fns';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import { Menu, MenuItem } from '@mui/material';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement, TimeScale, zoomPlugin);
 
 const DetailedCostAnalysisWidget = ({ lineData }) => {
   const [menuPosition, setMenuPosition] = useState(null);
   const [clickedElement, setClickedElement] = useState(null);
+  const [startDate, setStartDate] = useState(new Date('2024-07-24T00:00'));
+  const [endDate, setEndDate] = useState(new Date('2024-07-31T00:00'));
 
   const handleLineClick = (event, elements) => {
-    
     if (elements.length > 0) {
       const { clientX, clientY } = event.native;
       setMenuPosition({ mouseX: clientX, mouseY: clientY });
       const { index } = elements[0];
       setClickedElement({ index, type: 'line' });
     }
-    // event.preventDefault();
   };
 
   const handleDoughnutClick = (event, elements) => {
@@ -65,6 +67,14 @@ const DetailedCostAnalysisWidget = ({ lineData }) => {
     }
   };
 
+  const handleStartDateChange = (date) => {
+    setStartDate(date);
+  };
+
+  const handleEndDateChange = (date) => {
+    setEndDate(date);
+  };
+
   const lineOptions = {
     scales: {
       x: {
@@ -72,8 +82,8 @@ const DetailedCostAnalysisWidget = ({ lineData }) => {
         time: {
           unit: 'day',
         },
-        min: '2024-07-22T00:00',  // Start date of the last week
-        max: '2024-07-29T00:00',  // End date of the last week
+        min: startDate,
+        max: endDate,
       },
       y: {
         beginAtZero: true,
@@ -149,6 +159,23 @@ const DetailedCostAnalysisWidget = ({ lineData }) => {
               <Card className="mb-4">
                 <Card.Body>
                   <Card.Title>Burn Rate</Card.Title>
+                  <div className="d-flex justify-content-between mb-3">
+                    <DatePicker
+                      selected={startDate}
+                      onChange={handleStartDateChange}
+                      selectsStart
+                      startDate={startDate}
+                      endDate={endDate}
+                    />
+                    <DatePicker
+                      selected={endDate}
+                      onChange={handleEndDateChange}
+                      selectsEnd
+                      startDate={startDate}
+                      endDate={endDate}
+                      minDate={startDate}
+                    />
+                  </div>
                   <Line data={lineData} options={lineOptions} />
                   <p>Starting Credit: 180 USD</p>
                   <p>Credit Remaining: 60 USD</p>

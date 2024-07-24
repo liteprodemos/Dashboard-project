@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import 'chart.js/auto';
+// eslint-disable-next-line
 import { Box, MenuItem, Select, Typography, Grid, Card, CardContent, Menu } from '@mui/material';
 
 const chartOptions = (handleClick) => ({
