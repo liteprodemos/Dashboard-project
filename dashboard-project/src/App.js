@@ -273,6 +273,12 @@ function App() {
                 <NetworkTrafficWidget />
               </Box>
             </Grid>
+
+            <Grid item xs={12}>
+              <Box sx={{ border: '1px solid black', p: 2 }}>
+                <CostAnalysisWidget />
+              </Box>
+            </Grid>
           </>
         )}
         {userRole === 'Tech' && (

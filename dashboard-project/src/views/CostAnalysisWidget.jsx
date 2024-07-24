@@ -1,56 +1,204 @@
+import React from "react";
+import { Container, Row, Col, Card } from "react-bootstrap";
+import { Line, Doughnut, Bar } from "react-chartjs-2";
+import { Box, Typography } from "@mui/material";
 
-import React from 'react';
-import { Card, CardContent, Typography } from '@mui/material';
-import { BarChart } from '@mui/x-charts/BarChart';
-import { axisClasses } from '@mui/x-charts/ChartsAxis';
-
-const chartSetting = {
-  yAxis: [
-    {
-      label: 'Cost ($)',
-      labelPadding: 30, // Add padding to make the label fully visible
-    },
+const staticData = {
+  alerts: [
+    "Spending has exceeded the allocated budget for Cloud Costs",
+    "Unusual spending patterns detected in Maintenance costs",
+    "Potential security breach detected in server ABC",
+    "Available disk space on server DEF is below 10%",
   ],
-  width: 500,
-  height: 300,
-  sx: {
-    [`.${axisClasses.left} .${axisClasses.label}`]: {
-      transform: 'translate(-10px, 0)', // Adjust transform to ensure full visibility
-    },
+  monthlyCost: {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    datasets: [
+      {
+        label: "Monthly Cost",
+        data: [5200, 5800, 6000, 5400, 5800, 6200],
+        fill: false,
+        borderColor: "#4bc0c0",
+      },
+    ],
+  },
+  predictedCost: {
+    labels: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    datasets: [
+      {
+        label: "Actual",
+        data: [6450, 6500, 6600, 6700, 6750, 6800],
+        fill: false,
+        borderColor: "#36a2eb",
+      },
+      {
+        label: "Predicted",
+        data: [6450, 6550, 6650, 6750, 6850, 6950],
+        fill: false,
+        borderColor: "#ff6384",
+        borderDash: [5, 5],
+      },
+    ],
+  },
+  budgetVsActual: {
+    labels: [
+      "On Premise",
+      "Cloud",
+      "Maintenance",
+      "Power Consumptions",
+      "Other",
+    ],
+    datasets: [
+      {
+        label: "Budget",
+        data: [3000, 3200, 2000, 2200, 500],
+        backgroundColor: "green",
+      },
+      {
+        label: "Actual",
+        data: [2800, 3500, 2200, 2100, 800],
+        backgroundColor: "red",
+      },
+    ],
+  },
+  doughnutData: {
+    labels: [
+      "On premise cost",
+      "Cloud cost",
+      "Maintenance",
+      "Power Consumption",
+      "Other Expenses",
+    ],
+    datasets: [
+      {
+        data: [3000, 3000, 2000, 1000, 500],
+        backgroundColor: [
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#FF9F40",
+          "#4BC0C0",
+        ],
+      },
+    ],
+  },
+  optimizationSuggestions: [
+    "Replace old hardware with energy-efficient servers to lower power consumption and cooling requirements.",
+    "Implement predictive maintenance to foresee and address potential failures before they occur, reducing unplanned downtime.",
+    "Implement predictive maintenance to foresee and address potential failures before they occur, reducing unplanned downtime.",
+  ],
+};
+
+const styles = {
+  card: {
+    border: "2px solid #e0e0e0",
+    borderRadius: "8px",
+    marginBottom: "20px",
+  },
+  header: {
+    backgroundColor: "#f8f9fa",
+    padding: "10px 15px",
+    borderBottom: "2px solid #e0e0e0",
+    borderTopLeftRadius: "8px",
+    borderTopRightRadius: "8px",
+  },
+  body: {
+    padding: "15px",
+    backgroundColor: "#ffffff",
   },
 };
 
-const valueFormatter = (value) => `$${value}`;
-
 const CostAnalysisWidget = () => {
-    const costDataset = [
-        { month: 'January', instance1: 500, instance2: 600, instance3: 450 },
-        { month: 'February', instance1: 520, instance2: 610, instance3: 460 },
-        { month: 'March', instance1: 530, instance2: 620, instance3: 470 },
-        { month: 'April', instance1: 540, instance2: 630, instance3: 480 },
-        { month: 'May', instance1: 550, instance2: 640, instance3: 490 },
-        { month: 'June', instance1: 560, instance2: 650, instance3: 500 },
-      ];
   return (
-    <Card sx={{ width: '100%', maxWidth: 600, margin: 1, backgroundColor: '#ffffff', color: 'black' }}>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          Monthly Cost Analysis
+    <Container>
+      <Box sx={{ marginTop: 4 , marginBottom:4 }}>
+        <Typography variant="h4" component="h1" align="center">
+          Server Farm Budget Overview
         </Typography>
-        <div style={{ height: '300px' }}>
-          <BarChart
-            dataset={costDataset}
-            xAxis={[{ scaleType: 'band', dataKey: 'month' }]}
-            series={[
-              { dataKey: 'instance1', label: 'Instance 1', valueFormatter },
-              { dataKey: 'instance2', label: 'Instance 2', valueFormatter },
-              { dataKey: 'instance3', label: 'Instance 3', valueFormatter },
-            ]}
-            {...chartSetting}
-          />
-        </div>
-      </CardContent>
-    </Card>
+      </Box>
+      <Row>
+        <Col md={6} className="mb-3">
+          <Card style={styles.card}>
+            <Card.Header style={styles.header}>
+              <Typography variant="h6" component="h2">
+                Alerts & Notifications
+              </Typography>
+            </Card.Header>
+            <Card.Body style={styles.body}>
+              <ul>
+                {staticData.alerts.map((alert, index) => (
+                  <li key={index}>{alert}</li>
+                ))}
+              </ul>
+            </Card.Body>
+          </Card>
+          <Card>
+            <Card.Body>
+              <Line data={staticData.predictedCost} />
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={6} className="mb-3">
+          <Card>
+            <Card.Body>
+              <Doughnut data={staticData.doughnutData} />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      {/* <Row>
+        <Col md={6} className="mb-3">
+          <Card>
+            <Card.Body>
+              <Doughnut data={staticData.doughnutData} />
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={6} className="mb-3">
+          <Card>
+            <Card.Body>
+              <Line data={staticData.predictedCost} />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row> */}
+      {/* <Row>
+        <Col md={12} className="mb-3">
+          <Card>
+            <Card.Body>
+              <Line data={staticData.monthlyCost} />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row> */}
+
+      <Row>
+        <Col md={12} className="mb-3">
+          <Card>
+            <Card.Body>
+              <Bar data={staticData.budgetVsActual} />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={12} className="mb-3">
+          <Card style={styles.card}>
+            <Card.Header style={styles.header}>
+              <Typography variant="h6" component="h2">
+                Optimization Suggestions
+              </Typography>
+            </Card.Header>
+            <Card.Body style={styles.body}>
+              <ul>
+                {staticData.optimizationSuggestions.map((suggestion, index) => (
+                  <li key={index}>{suggestion}</li>
+                ))}
+              </ul>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

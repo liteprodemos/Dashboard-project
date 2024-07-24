@@ -15,12 +15,14 @@ const DetailedCostAnalysisWidget = ({ lineData }) => {
   const [clickedElement, setClickedElement] = useState(null);
 
   const handleLineClick = (event, elements) => {
+    
     if (elements.length > 0) {
       const { clientX, clientY } = event.native;
       setMenuPosition({ mouseX: clientX, mouseY: clientY });
       const { index } = elements[0];
       setClickedElement({ index, type: 'line' });
     }
+    // event.preventDefault();
   };
 
   const handleDoughnutClick = (event, elements) => {
