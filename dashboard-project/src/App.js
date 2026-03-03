@@ -26,8 +26,23 @@ import { Container, Grid, Box, Typography } from '@mui/material';
 // eslint-disable-next-line
 import { Card, Dropdown, DropdownButton } from 'react-bootstrap';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 function App() {
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.origin !== "https://racv--cbqa.sandbox.my.site.com") {
+        return;
+      }
+
+      console.log("Data received from Salesforce:", event.data);
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+
   const [selectedServer, setSelectedServer] = useState('server1');
   // const [userRole, setUserRole] = useState('CEO'); // Default role
   const [userRole, setUserRole] = useState('ALL');
@@ -179,129 +194,132 @@ function App() {
   const currentServerData = HardwareUsageWidgetData[selectedServer] || {};
 
   return (
-    <Container>
-    {/* Header */}
-    <Box sx={{ bgcolor: 'primary.main', color: 'white', p: 2, mb: 2 }}>
-      <Typography variant="h4">Dashboard Sample 1</Typography>
-    </Box>
+  //   <Container>
+  //   {/* Header */}
+  //   <Box sx={{ bgcolor: 'primary.main', color: 'white', p: 2, mb: 2 }}>
+  //     <Typography variant="h4">Dashboard Sample 1</Typography>
+  //   </Box>
 
-    {/* Filters Section */}
-    <Box sx={{ mb: 2 }}>
+  //   {/* Filters Section */}
+  //   <Box sx={{ mb: 2 }}>
      
-      <Grid container spacing={2}>
-      <Grid item xs={12} md={1}>
-      <Typography variant="h6" gutterBottom>Filters</Typography>
-        </Grid>
-        <Grid item xs={12} md={2}>
-        <DropdownButton
-          id="dropdown-role-button"
-          title={`Role: ${userRole}`}
-          onSelect={handleRoleSelect}
-          style={{ width: '100%' }}
-        >
-          <Dropdown.Item eventKey="CEO">CEO</Dropdown.Item>
-          <Dropdown.Item eventKey="Tech">Tech</Dropdown.Item>
-          <Dropdown.Item eventKey="ALL">ALL</Dropdown.Item> {/* Add this line */}
-        </DropdownButton>
-        </Grid>
-        <Grid item xs={12} md={2}>
-          <DropdownButton
-            id="dropdown-server-button"
-            title={`Select Server (${selectedServer === 'server1' ? 'Server 1' : 'Server 2'})`}
-            onSelect={handleServerSelect}
-            style={{ width: '100%' }}
-          >
-            <Dropdown.Item eventKey="server1">Server 1</Dropdown.Item>
-            <Dropdown.Item eventKey="server2">Server 2</Dropdown.Item>
-          </DropdownButton>
-        </Grid>
-      </Grid>
-    </Box>
+  //     <Grid container spacing={2}>
+  //     <Grid item xs={12} md={1}>
+  //     <Typography variant="h6" gutterBottom>Filters</Typography>
+  //       </Grid>
+  //       <Grid item xs={12} md={2}>
+  //       <DropdownButton
+  //         id="dropdown-role-button"
+  //         title={`Role: ${userRole}`}
+  //         onSelect={handleRoleSelect}
+  //         style={{ width: '100%' }}
+  //       >
+  //         <Dropdown.Item eventKey="CEO">CEO</Dropdown.Item>
+  //         <Dropdown.Item eventKey="Tech">Tech</Dropdown.Item>
+  //         <Dropdown.Item eventKey="ALL">ALL</Dropdown.Item> {/* Add this line */}
+  //       </DropdownButton>
+  //       </Grid>
+  //       <Grid item xs={12} md={2}>
+  //         <DropdownButton
+  //           id="dropdown-server-button"
+  //           title={`Select Server (${selectedServer === 'server1' ? 'Server 1' : 'Server 2'})`}
+  //           onSelect={handleServerSelect}
+  //           style={{ width: '100%' }}
+  //         >
+  //           <Dropdown.Item eventKey="server1">Server 1</Dropdown.Item>
+  //           <Dropdown.Item eventKey="server2">Server 2</Dropdown.Item>
+  //         </DropdownButton>
+  //       </Grid>
+  //     </Grid>
+  //   </Box>
 
-    {/* Widgets */}
-    <Box sx={{ mb: 2 }}>
-      <Grid container spacing={2}>
-        {userRole === 'CEO' && (
-          <Grid item xs={12}>
-            <Box sx={{ border: '1px solid black', p: 2 }}>
-              <DetailedCostAnalysisWidget 
-                lineData={DetailedCostAnalysisWidgetData}
-              />
-            </Box>
-          </Grid>
-        )}
+  //   {/* Widgets */}
+  //   <Box sx={{ mb: 2 }}>
+  //     <Grid container spacing={2}>
+  //       {userRole === 'CEO' && (
+  //         <Grid item xs={12}>
+  //           <Box sx={{ border: '1px solid black', p: 2 }}>
+  //             <DetailedCostAnalysisWidget 
+  //               lineData={DetailedCostAnalysisWidgetData}
+  //             />
+  //           </Box>
+  //         </Grid>
+  //       )}
 
-        <Grid item xs={12} md={6}>
-          <Box sx={{ mt: 5 }}>
-            <SystemLoadWidget 
-              selectedServer={selectedServer}
-              serverData={SystemLoadWidgetData}
-            />
-          </Box>
-        </Grid>
+  //       <Grid item xs={12} md={6}>
+  //         <Box sx={{ mt: 5 }}>
+  //           <SystemLoadWidget 
+  //             selectedServer={selectedServer}
+  //             serverData={SystemLoadWidgetData}
+  //           />
+  //         </Box>
+  //       </Grid>
        
-        <Grid item xs={12} md={6}>
-          {currentServerData.resources ? (
-            <HardwareUsageWidget 
-              selectedServer={selectedServer}
-              data={currentServerData.resources}
-              handleServerChange={handleServerSelect}
-            />
-          ) : (
-            <Typography variant="body1" color="error">No data available for the selected server.</Typography>
-          )}
-        </Grid>
-        {userRole === 'ALL' && (
-          <>
-          <Grid item xs={12}>
-              <Box sx={{ border: '1px solid black', p: 2 }}>
-                <RealTimeUtilizationWidget 
-                  selectedServer={selectedServer}
-                  serverData={RealTimeUtilizationWidgetData}
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={12}>
-            <Box sx={{ border: '1px solid black', p: 2 }}>
-              <DetailedCostAnalysisWidget 
-                lineData={DetailedCostAnalysisWidgetData}
-              />
-            </Box>
-          </Grid>
-            <Grid item xs={12}>
-              <Box sx={{ border: '1px solid black', p: 2 }}>
-                <NetworkTrafficWidget />
-              </Box>
-            </Grid>
+  //       <Grid item xs={12} md={6}>
+  //         {currentServerData.resources ? (
+  //           <HardwareUsageWidget 
+  //             selectedServer={selectedServer}
+  //             data={currentServerData.resources}
+  //             handleServerChange={handleServerSelect}
+  //           />
+  //         ) : (
+  //           <Typography variant="body1" color="error">No data available for the selected server.</Typography>
+  //         )}
+  //       </Grid>
+  //       {userRole === 'ALL' && (
+  //         <>
+  //         <Grid item xs={12}>
+  //             <Box sx={{ border: '1px solid black', p: 2 }}>
+  //               <RealTimeUtilizationWidget 
+  //                 selectedServer={selectedServer}
+  //                 serverData={RealTimeUtilizationWidgetData}
+  //               />
+  //             </Box>
+  //           </Grid>
+  //           <Grid item xs={12}>
+  //           <Box sx={{ border: '1px solid black', p: 2 }}>
+  //             <DetailedCostAnalysisWidget 
+  //               lineData={DetailedCostAnalysisWidgetData}
+  //             />
+  //           </Box>
+  //         </Grid>
+  //           <Grid item xs={12}>
+  //             <Box sx={{ border: '1px solid black', p: 2 }}>
+  //               <NetworkTrafficWidget />
+  //             </Box>
+  //           </Grid>
 
-            <Grid item xs={12}>
-              <Box sx={{ border: '1px solid black', p: 2 }}>
-                <CostAnalysisWidget />
-              </Box>
-            </Grid>
-          </>
-        )}
-        {userRole === 'Tech' && (
-          <>
-            <Grid item xs={12}>
-              <Box sx={{ border: '1px solid black', p: 2 }}>
-                <RealTimeUtilizationWidget 
-                  selectedServer={selectedServer}
-                  serverData={RealTimeUtilizationWidgetData}
-                />
-              </Box>
-            </Grid>
+  //           <Grid item xs={12}>
+  //             <Box sx={{ border: '1px solid black', p: 2 }}>
+  //               <CostAnalysisWidget />
+  //             </Box>
+  //           </Grid>
+  //         </>
+  //       )}
+  //       {userRole === 'Tech' && (
+  //         <>
+  //           <Grid item xs={12}>
+  //             <Box sx={{ border: '1px solid black', p: 2 }}>
+  //               <RealTimeUtilizationWidget 
+  //                 selectedServer={selectedServer}
+  //                 serverData={RealTimeUtilizationWidgetData}
+  //               />
+  //             </Box>
+  //           </Grid>
 
-            <Grid item xs={12}>
-              <Box sx={{ border: '1px solid black', p: 2 }}>
-                <NetworkTrafficWidget />
-              </Box>
-            </Grid>
-          </>
-        )}
-      </Grid>
-    </Box>
-  </Container>
+  //           <Grid item xs={12}>
+  //             <Box sx={{ border: '1px solid black', p: 2 }}>
+  //               <NetworkTrafficWidget />
+  //             </Box>
+  //           </Grid>
+  //         </>
+  //       )}
+  //     </Grid>
+  //   </Box>
+  // </Container>
+  <div>
+      <iframe src="https://racv--cbqa.sandbox.my.site.com/s/testpoccustsearch" width="100%" height="800px"></iframe>
+  </div>
   );
 }
 
